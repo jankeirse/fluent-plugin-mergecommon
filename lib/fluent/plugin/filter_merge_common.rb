@@ -6,9 +6,6 @@ module Fluent::Plugin
 
     helpers :timer, :event_emitter
 
-    desc "The key for events that have to be merged"
-    config_param :key, :string
-
     desc "The fields that have to match before merging"
     config_param :multiline_matching_fields, :array, value_type: :string
     desc"The fields that should be concattenated with same field of each event where fields match"
@@ -70,13 +67,8 @@ module Fluent::Plugin
           new_es.add(time, record)
           next
         end
-        unless record.key?(@key)
-          new_es.add(time, record)
-          next
-        end
         begin
           returned_time, event_to_be_emitted = process_event(tag, time, record)
-          print "Tag: #{tag}\n"
           if event_to_be_emitted
             time = returned_time if @use_first_timestamp
             router.emit("#{tag}#{@tag_postfix}", time, event_to_be_emitted)

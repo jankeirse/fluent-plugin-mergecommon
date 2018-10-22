@@ -13,7 +13,6 @@ A config like this:
 &lt;/source&gt;
 &lt;filter agent-log&gt;
     &#64;type merge_common
-    key message
     multiline_matching_fields timestamp,pid,thread,loglevel,executionenvironment,logentrytype
     multiline_concat_fields ["message"]
     flush_interval 1
