@@ -23,10 +23,10 @@ module Fluent::Plugin
     config_param :stream_identity_key, :string, default: nil
     desc "The interval between data flushes, 0 means disable timeout"
     config_param :flush_interval, :time, default: 1
-    desc "The label name to handle timeout"
-    config_param :timeout_label, :string, default: nil
     desc "Use timestamp of first record when buffer is flushed"
     config_param :use_first_timestamp, :bool, default: true
+    desc "tag postfix to be added"
+    config_param :tag_postfix, :string, default: ".multiline"
 
     class TimeoutError < StandardError
     end
@@ -76,9 +76,10 @@ module Fluent::Plugin
         end
         begin
           returned_time, event_to_be_emitted = process_event(tag, time, record)
+          print "Tag: #{tag}\n"
           if event_to_be_emitted
             time = returned_time if @use_first_timestamp
-            new_es.add(time, event_to_be_emitted)
+            router.emit("#{tag}#{@tag_postfix}", time, event_to_be_emitted)
           end
         rescue => e
           router.emit_error_event(tag, time, record, e)
@@ -181,9 +182,8 @@ module Fluent::Plugin
           tag = stream_identity.split(":").first
           message = "Timeout flush: #{stream_identity}"
           time, record = @current_record[stream_identity]
-          handle_timeout(tag, @use_first_timestamp ? time : now, record)
+          handle_timeout(tag, @use_first_timestamp ? time : now, record, message)
           @current_record[stream_identity] = nil
-          log.info(message)
         end
         @timeout_map.reject! do |stream_identity, _|
           timeout_stream_identities.include?(stream_identity)
@@ -196,18 +196,14 @@ module Fluent::Plugin
         next if timeandrecord == nil
         time, record = timeandrecord
         tag = stream_identity.split(":").first
-        handle_timeout(tag,time, record)
+        message = "Flushing remaining buffer: #{stream_identity}"
+        handle_timeout(tag,time, record, message)
       end
       @current_record.clear
     end
 
-    def handle_timeout(tag, time, record)
-      if @timeout_label
-        event_router = event_emitter_router(@timeout_label)
-        event_router.emit(tag, time, record)
-      else
-        router.emit_error_event(tag, time, record, TimeoutError.new("abc"))
-      end
+    def handle_timeout(tag, time, record, message)
+      router.emit("#{tag}#{@tag_postfix}", time, record)
     end
   end
 end

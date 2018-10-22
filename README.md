@@ -19,12 +19,6 @@ A config like this:
     flush_interval 1
     timeout_label alltimeout
 &lt;/filter&gt;
-&lt;label alltimeout&gt;
-    &lt;match **&gt;
-      &#64;type stdout
-      output_type hash
-    &lt;/match&gt;
-&lt;/label&gt;
 &lt;match **&gt;
   &#64;type stdout
   output_type hash
