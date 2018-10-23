@@ -6,7 +6,8 @@ module Fluent::Plugin
 
     helpers :timer, :event_emitter
 
-    desc "The fields that have to match before merging"
+    desc "The fields that have to match before merging, you can use time or timestamp if the time of the " +
+             "event has to match."
     config_param :multiline_matching_fields, :array, value_type: :string
     desc"The fields that should be concattenated with same field of each event where fields match"
     config_param :multiline_concat_fields, :array, value_type: :string
@@ -123,13 +124,18 @@ module Fluent::Plugin
     def merge_with_previous_record?(stream_identity, time, record)
       previous_time, previous_record = @previous_record[stream_identity]
       @previous_record[stream_identity] = [time, record]
-      if previous_record == nil || ! Fluent::EventTime.eq?( previous_time , time)
+      if previous_record == nil
         return false
       end
 
       @multiline_matching_fields.each do |field|
         unless record[field] == previous_record[field]
           return false
+        end
+        if (field == "time" or field == "timestamp") and !record.has_key?(field)
+          unless Fluent::EventTime.eq?( previous_time , time)
+            return false
+          end
         end
       end
       return true
