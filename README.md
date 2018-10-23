@@ -2,10 +2,9 @@
 Fluentd filter plugin for merging successive events (concatenating fields) if they have a number of fields in common
 ## Requirements
 
-| fluent-plugin-concat | fluentd    | ruby   |
-|----------------------|------------|--------|
-| >= 2.0.0             | >= v0.14.0 | >= 2.1 |
-| < 2.0.0              | >= v0.12.0 | >= 1.9 |
+| fluentd    | ruby   |
+|------------|--------|
+| >= v0.14.0 | >= 2.1 |
 
 ## Configuration
 
