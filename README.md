@@ -45,11 +45,12 @@ Defaults to 1.
 Use timestamp of first record when buffer is flushed, otherwise it's the time the last event is flushed. Defaults to true.
 
 **tag_postfix** (string)
+
 This is added to the tag of the original event when outputing the resulting event stream. This is necessary to avoid deadlocks in fluentd logic. Defaults to ".multiline" .
     
 ## Original purpose
 
-This plugin was originally written to handle OpenEdge ABL log files. It can be adapted to support at least Pacific and classic Appserver Agent Logs and Client Logs. 
+This plugin was originally written to handle OpenEdge ABL log files. It can be used to support at least Pacific and classic Appserver Agent Logs and Client Logs. 
 	
 ## sample usage	
 
@@ -93,3 +94,8 @@ And output events like this:
 
 2019-10-18 16:04:08.042000000 +0200 agent-log.multiline: {"pid"=&gt;"012528", "thread"=&gt;"1711302400", "loglevel"=&gt;"1", "executionenvironment"=&gt;"AS-8", "logentrytype"=&gt;"SmartWebHa", "message"=&gt;"################################################################################################################################# End Web Handler Request: GET /Entities/pick-stations### Request runtime: 29 msecs, Response Content Length: 14623 bytes##############################################################################################################################"}
 </pre>
+
+## License
+
+The https://github.com/fluent-plugins-nursery/fluent-plugin-concat plugin was used to figure out how to write this one, so I decided to use the same license as that plugin.
+The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
