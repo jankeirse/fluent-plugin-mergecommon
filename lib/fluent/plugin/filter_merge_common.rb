@@ -152,7 +152,7 @@ module Fluent::Plugin
         previous_time, aggregated_record = @current_record[stream_identity]
         if @multiline_concat_fields
           @multiline_concat_fields.each do |field|
-            aggregated_record[field] += "#{@multitline_concat_separator}#{record[field]}"
+            aggregated_record[field] += "#{@multiline_concat_separator}#{record[field]}"
           end
         end
 
